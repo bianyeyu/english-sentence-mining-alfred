@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.dustandlight.english-sentence-mining</string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>connections</key>
+	<dict>
+		<key>0C9B26E0-DAC0-43D7-8F01-58CC0C5A0F0D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>8BB1B433-89F0-41E7-9833-D27A5AB7D372</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>2D941AD4-55F8-484B-9174-2079418487A1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>8BB1B433-89F0-41E7-9833-D27A5AB7D372</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>68B470E9-A871-4D97-896F-8D6DF6162506</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>8656536A-29B6-463B-8F86-8A6C6C27B12C</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>9F5A2D4A-6D54-4C2E-8A60-1B757AF4C5A1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B1D87F09-AB6E-4B83-8EB2-780D12B29A6D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>BC877D37-BB4D-4921-AB8E-6A5361BD7A89</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>80EA99B8-85B3-44B5-A204-545155D18857</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Dust and Light</string>
+	<key>description</key>
+	<string>Select an English sentence, choose an unknown word, and save contextual vocabulary to Anki.</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>English Sentence Mining</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>acceptsfiles</key>
+				<false/>
+				<key>acceptsmulti</key>
+				<integer>0</integer>
+				<key>acceptstext</key>
+				<true/>
+				<key>acceptsurls</key>
+				<false/>
+				<key>name</key>
+				<string>ew</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.universalaction</string>
+			<key>uid</key>
+			<string>0C9B26E0-DAC0-43D7-8F01-58CC0C5A0F0D</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>2D941AD4-55F8-484B-9174-2079418487A1</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./capture.sh "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>8BB1B433-89F0-41E7-9833-D27A5AB7D372</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>ew</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>runningsubtext</key>
+				<string>Preparing word list...</string>
+				<key>script</key>
+				<string>./list.sh "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>skipuniversalaction</key>
+				<true/>
+				<key>subtext</key>
+				<string>Choose an unknown word from the selected sentence</string>
+				<key>title</key>
+				<string>English Word to Anki</string>
+				<key>type</key>
+				<integer>11</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>68B470E9-A871-4D97-896F-8D6DF6162506</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./add.sh "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>8656536A-29B6-463B-8F86-8A6C6C27B12C</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>ewflush</string>
+				<key>subtext</key>
+				<string>Retry English Sentence Mining cards queued while Anki was unavailable</string>
+				<key>text</key>
+				<string>Flush pending English Anki cards</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>BC877D37-BB4D-4921-AB8E-6A5361BD7A89</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./flush.sh</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>80EA99B8-85B3-44B5-A204-545155D18857</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>ewsetup</string>
+				<key>subtext</key>
+				<string>Login or verify the isolated Codex ChatGPT session for ew</string>
+				<key>text</key>
+				<string>Setup English Sentence Mining Codex login</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>9F5A2D4A-6D54-4C2E-8A60-1B757AF4C5A1</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./setup.sh</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>B1D87F09-AB6E-4B83-8EB2-780D12B29A6D</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string># English Sentence Mining
+
+## First-time setup
+
+1. Install OpenAI Codex CLI if it is not installed.
+2. Run `ewsetup` in Alfred.
+3. A Terminal window opens the Codex ChatGPT login flow.
+4. Run `ewsetup` again. Success looks like: `Codex 已登录：/Users/you/.codex-ew`.
+
+The workflow uses an isolated Codex home by default:
+
+`~/.codex-ew`
+
+This keeps the `ew` login/cache separate from your main Codex setup. To reuse your normal Codex login, change `codex_home` to:
+
+`~/.codex`
+
+## Default Codex lookup
+
+- Model: `gpt-5.3-codex-spark`
+- Service tier: default
+- Reasoning effort: `low`
+
+These values are editable in this Configure Workflow panel. For `gpt-5.5`, you may set Service Tier to `fast` and Reasoning Effort to `none`.
+
+## Daily use
+
+Select an English sentence, run Universal Actions, choose `ew`, then pick the unknown word or phrase. Manual fallback: type `ew &lt;sentence&gt;`.
+
+`ew` shows sentence translation at the top of Alfred results. Exact word queries and `/phrase` queries warm target meaning previews in the background.
+
+## Sharing safety
+
+Do not export or publish `~/.codex/auth.json`, `~/.codex-ew/auth.json`, `config.json` with API keys, or any exported credential variables. Other users should run `ewsetup` and sign in with their own ChatGPT account.</string>
+	<key>uidata</key>
+	<dict>
+		<key>0C9B26E0-DAC0-43D7-8F01-58CC0C5A0F0D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>40</integer>
+		</dict>
+		<key>2D941AD4-55F8-484B-9174-2079418487A1</key>
+		<dict>
+			<key>note</key>
+			<string>Optional: bind a key and set Argument to "Selection in macOS".</string>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>170</integer>
+		</dict>
+		<key>68B470E9-A871-4D97-896F-8D6DF6162506</key>
+		<dict>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>320</integer>
+		</dict>
+		<key>80EA99B8-85B3-44B5-A204-545155D18857</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>470</integer>
+		</dict>
+		<key>8656536A-29B6-463B-8F86-8A6C6C27B12C</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>320</integer>
+		</dict>
+		<key>8BB1B433-89F0-41E7-9833-D27A5AB7D372</key>
+		<dict>
+			<key>xpos</key>
+			<integer>260</integer>
+			<key>ypos</key>
+			<integer>90</integer>
+		</dict>
+		<key>9F5A2D4A-6D54-4C2E-8A60-1B757AF4C5A1</key>
+		<dict>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>620</integer>
+		</dict>
+		<key>B1D87F09-AB6E-4B83-8EB2-780D12B29A6D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>620</integer>
+		</dict>
+		<key>BC877D37-BB4D-4921-AB8E-6A5361BD7A89</key>
+		<dict>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>470</integer>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>Optional; free fallback works without it</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Optional OpenAI-compatible key for better contextual meanings.</string>
+			<key>label</key>
+			<string>OpenAI API Key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>openai_api_key</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>Your preferred small model</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Leave empty to use public fallback only.</string>
+			<key>label</key>
+			<string>OpenAI Model</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>openai_model</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>https://api.openai.com/v1</string>
+				<key>placeholder</key>
+				<string>https://api.openai.com/v1</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>OpenAI-compatible base URL.</string>
+			<key>label</key>
+			<string>OpenAI Base URL</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>openai_base_url</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>~/.codex-ew</string>
+				<key>placeholder</key>
+				<string>~/.codex-ew</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Isolated Codex login/cache directory used by ewsetup and ew.</string>
+			<key>label</key>
+			<string>Codex Home</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>codex_home</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>codex</string>
+				<key>placeholder</key>
+				<string>codex or /path/to/codex</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Codex CLI executable. Leave as codex unless Alfred cannot find it.</string>
+			<key>label</key>
+			<string>Codex CLI Path</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>codex_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>gpt-5.3-codex-spark</string>
+				<key>placeholder</key>
+				<string>gpt-5.3-codex-spark</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Codex model for ChatGPT-subscription lookups.</string>
+			<key>label</key>
+			<string>Codex Model</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>codex_model</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>leave empty for default tier; use fast for gpt-5.5</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Service tier override. Leave empty for Spark; use fast for GPT-5.5.</string>
+			<key>label</key>
+			<string>Codex Service Tier</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>codex_service_tier</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>low</string>
+				<key>placeholder</key>
+				<string>low</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Reasoning effort for lookup. Spark supports low/medium/high/xhigh; GPT-5.5 can use none.</string>
+			<key>label</key>
+			<string>Codex Reasoning Effort</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>codex_reasoning_effort</string>
+		</dict>
+	</array>
+	<key>variablesdontexport</key>
+	<array>
+		<string>openai_api_key</string>
+	</array>
+	<key>version</key>
+	<string>0.1.0</string>
+</dict>
+</plist>
