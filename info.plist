@@ -595,6 +595,6 @@ Do not export or publish `~/.codex/auth.json`, `~/.codex-ew/auth.json`, `config.
 		<string>openai_api_key</string>
 	</array>
 	<key>version</key>
-	<string>0.1.0</string>
+	<string>0.1.1</string>
 </dict>
 </plist>
