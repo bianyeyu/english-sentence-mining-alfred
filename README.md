@@ -19,8 +19,8 @@ The Anki card contains:
 
 ## Installed Pieces
 
-- Tool script: `5_Workspace_工作台/EnglishSentenceMining/english_anki.py`
-- Alfred workflow: `~/Alfred/Alfred.alfredpreferences/workflows/user.workflow.93D36CB2-90F3-45C7-8B10-7758AC5F87A6/`
+- Tool script: bundled as `english_anki.py` inside the Alfred workflow.
+- Alfred workflow: imported into Alfred's workflow preferences folder.
 - Runtime cache and pending queue: `~/Library/Application Support/Alfred/Workflow Data/com.dustandlight.english-sentence-mining/`
 - Event log: `~/Library/Application Support/Alfred/Workflow Data/com.dustandlight.english-sentence-mining/events.jsonl`
 
