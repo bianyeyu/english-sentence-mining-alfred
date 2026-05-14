@@ -39,10 +39,16 @@ The workflow uses an OpenAI-compatible API by default:
 
 ```text
 base_url: https://api.groq.com/openai/v1
-model: qwen/qwen3-32b
+model: openai/gpt-oss-120b
 ```
 
 The model and base URL are editable in Alfred. The API key is not exported with the workflow.
+
+To test the configured provider, run:
+
+```text
+ewtest
+```
 
 ## Install
 
@@ -107,7 +113,7 @@ For higher quality contextual meanings, copy `config.example.json` to `config.js
 {
   "llm_api_key": "",
   "llm_base_url": "https://api.groq.com/openai/v1",
-  "llm_model": "qwen/qwen3-32b",
+  "llm_model": "openai/gpt-oss-120b",
   "llm_timeout_seconds": 25,
   "public_fallback": true,
   "open_browser_after_add": true
@@ -118,7 +124,7 @@ Environment variables are also supported:
 
 ```zsh
 export GROQ_API_KEY="..."
-export GROQ_MODEL="qwen/qwen3-32b"
+export GROQ_MODEL="openai/gpt-oss-120b"
 ```
 
 For another OpenAI-compatible provider, set `LLM Base URL` and `LLM Model` in Alfred's configuration panel.

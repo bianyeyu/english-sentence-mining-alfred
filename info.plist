@@ -60,6 +60,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>E2E3A8B8-3B40-48F4-9FA2-4C4F97E4E2A1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D9247B3F-096D-4B5D-9454-1F3F67C3B8C9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Dust and Light</string>
@@ -95,31 +108,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>action</key>
-				<integer>0</integer>
-				<key>argument</key>
-				<integer>0</integer>
-				<key>focusedappvariable</key>
-				<false/>
-				<key>focusedappvariablename</key>
-				<string></string>
-				<key>leftcursor</key>
-				<false/>
-				<key>modsmode</key>
-				<integer>0</integer>
-				<key>relatedAppsMode</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.hotkey</string>
-			<key>uid</key>
-			<string>2D941AD4-55F8-484B-9174-2079418487A1</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
@@ -137,6 +125,35 @@
 			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
 			<string>8BB1B433-89F0-41E7-9833-D27A5AB7D372</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>0</integer>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>2D941AD4-55F8-484B-9174-2079418487A1</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -258,6 +275,50 @@
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>ewtest</string>
+				<key>subtext</key>
+				<string>Test the configured LLM API key, model, and base URL</string>
+				<key>text</key>
+				<string>Test English Sentence Mining LLM connection</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>E2E3A8B8-3B40-48F4-9FA2-4C4F97E4E2A1</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./test.sh</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>D9247B3F-096D-4B5D-9454-1F3F67C3B8C9</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string># English Sentence Mining
@@ -267,18 +328,18 @@
 1. Install the workflow in Alfred.
 2. Open Configure Workflow.
 3. Paste your Groq API key into `LLM API Key`.
-4. Keep the default model `qwen/qwen3-32b`, or replace it with another model supported by your OpenAI-compatible provider.
+4. Keep the default model `openai/gpt-oss-120b`, or replace it with another model supported by your OpenAI-compatible provider.
 
 Default API settings:
 
 - Base URL: `https://api.groq.com/openai/v1`
-- Model: `qwen/qwen3-32b`
+- Model: `openai/gpt-oss-120b`
 
 ## Daily use
 
 Select an English sentence, run Universal Actions, choose `ew`, then pick the unknown word or phrase. Manual fallback: type `ew &lt;sentence&gt;`.
 
-`ew` shows sentence translation at the top of Alfred results. Exact word queries and `/phrase` queries warm target meaning previews in the background.
+`ew` shows sentence translation at the top of Alfred results. Exact word queries and `/phrase` queries warm target meaning previews in the background. Run `ewtest` to verify the configured API connection.
 
 ## Provider switching
 
@@ -292,66 +353,72 @@ Do not export or publish `config.json` with API keys, or any exported credential
 		<key>0C9B26E0-DAC0-43D7-8F01-58CC0C5A0F0D</key>
 		<dict>
 			<key>xpos</key>
-			<integer>40</integer>
+			<real>40.0</real>
 			<key>ypos</key>
-			<integer>40</integer>
+			<real>40.0</real>
 		</dict>
 		<key>2D941AD4-55F8-484B-9174-2079418487A1</key>
 		<dict>
 			<key>note</key>
 			<string>Optional: bind a key and set Argument to "Selection in macOS".</string>
 			<key>xpos</key>
-			<integer>40</integer>
+			<real>40.0</real>
 			<key>ypos</key>
-			<integer>170</integer>
+			<real>170.0</real>
 		</dict>
 		<key>68B470E9-A871-4D97-896F-8D6DF6162506</key>
 		<dict>
 			<key>xpos</key>
-			<integer>40</integer>
+			<real>40.0</real>
 			<key>ypos</key>
-			<integer>320</integer>
+			<real>320.0</real>
 		</dict>
 		<key>80EA99B8-85B3-44B5-A204-545155D18857</key>
 		<dict>
 			<key>xpos</key>
-			<integer>300</integer>
+			<real>300.0</real>
 			<key>ypos</key>
-			<integer>470</integer>
+			<real>470.0</real>
 		</dict>
 		<key>8656536A-29B6-463B-8F86-8A6C6C27B12C</key>
 		<dict>
 			<key>xpos</key>
-			<integer>300</integer>
+			<real>300.0</real>
 			<key>ypos</key>
-			<integer>320</integer>
+			<real>320.0</real>
 		</dict>
 		<key>8BB1B433-89F0-41E7-9833-D27A5AB7D372</key>
 		<dict>
 			<key>xpos</key>
-			<integer>260</integer>
+			<real>260.0</real>
 			<key>ypos</key>
-			<integer>90</integer>
+			<real>90.0</real>
 		</dict>
 		<key>BC877D37-BB4D-4921-AB8E-6A5361BD7A89</key>
 		<dict>
 			<key>xpos</key>
+			<real>40.0</real>
+			<key>ypos</key>
+			<real>470.0</real>
+		</dict>
+		<key>E2E3A8B8-3B40-48F4-9FA2-4C4F97E4E2A1</key>
+		<dict>
+			<key>xpos</key>
 			<integer>40</integer>
 			<key>ypos</key>
-			<integer>470</integer>
+			<integer>620</integer>
+		</dict>
+		<key>D9247B3F-096D-4B5D-9454-1F3F67C3B8C9</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>620</integer>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
 	<array>
 		<dict>
-			<key>variable</key>
-			<string>llm_api_key</string>
-			<key>label</key>
-			<string>LLM API Key</string>
-			<key>description</key>
-			<string>Groq API key or another OpenAI-compatible provider key. Not exported with the workflow.</string>
-			<key>type</key>
-			<string>textfield</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
@@ -363,37 +430,37 @@ Do not export or publish `config.json` with API keys, or any exported credential
 				<key>trim</key>
 				<true/>
 			</dict>
+			<key>description</key>
+			<string>Groq API key or another OpenAI-compatible provider key. Not exported with the workflow.</string>
+			<key>label</key>
+			<string>LLM API Key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>llm_api_key</string>
 		</dict>
 		<dict>
-			<key>variable</key>
-			<string>llm_model</string>
-			<key>label</key>
-			<string>LLM Model</string>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>openai/gpt-oss-120b</string>
+				<key>placeholder</key>
+				<string>openai/gpt-oss-120b</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
 			<key>description</key>
 			<string>Model used for translations and contextual meanings.</string>
+			<key>label</key>
+			<string>LLM Model</string>
 			<key>type</key>
 			<string>textfield</string>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string>qwen/qwen3-32b</string>
-				<key>placeholder</key>
-				<string>qwen/qwen3-32b</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<true/>
-			</dict>
+			<key>variable</key>
+			<string>llm_model</string>
 		</dict>
 		<dict>
-			<key>variable</key>
-			<string>llm_base_url</string>
-			<key>label</key>
-			<string>LLM Base URL</string>
-			<key>description</key>
-			<string>OpenAI-compatible API base URL. Default is Groq.</string>
-			<key>type</key>
-			<string>textfield</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
@@ -405,6 +472,14 @@ Do not export or publish `config.json` with API keys, or any exported credential
 				<key>trim</key>
 				<true/>
 			</dict>
+			<key>description</key>
+			<string>OpenAI-compatible API base URL. Default is Groq.</string>
+			<key>label</key>
+			<string>LLM Base URL</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>llm_base_url</string>
 		</dict>
 	</array>
 	<key>variablesdontexport</key>
@@ -412,6 +487,6 @@ Do not export or publish `config.json` with API keys, or any exported credential
 		<string>llm_api_key</string>
 	</array>
 	<key>version</key>
-	<string>0.2.0</string>
+	<string>0.2.1</string>
 </dict>
 </plist>

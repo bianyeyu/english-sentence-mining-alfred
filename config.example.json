@@ -3,7 +3,7 @@
   "model_name": "English Sentence Mining",
   "llm_api_key": "",
   "llm_base_url": "https://api.groq.com/openai/v1",
-  "llm_model": "qwen/qwen3-32b",
+  "llm_model": "openai/gpt-oss-120b",
   "llm_timeout_seconds": 25,
   "preview_translation": true,
   "preview_target_lookup": true,

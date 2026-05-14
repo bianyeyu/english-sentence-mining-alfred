@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
     "model_name": "English Sentence Mining",
     "llm_api_key": "",
     "llm_base_url": "https://api.groq.com/openai/v1",
-    "llm_model": "qwen/qwen3-32b",
+    "llm_model": "openai/gpt-oss-120b",
     "llm_timeout_seconds": 25,
     "preview_translation": True,
     "preview_target_lookup": True,
@@ -643,6 +643,27 @@ def run_llm_json(config, messages, timeout=None):
     return extract_json_object(data["choices"][0]["message"]["content"])
 
 
+def test_llm_connection(config):
+    api_key, model, base_url = llm_settings(config)
+    if not api_key:
+        raise UserFacingError("未配置 LLM API Key")
+    if not model:
+        raise UserFacingError("未配置 LLM Model")
+    messages = [
+        {"role": "system", "content": "Return valid JSON only."},
+        {"role": "user", "content": json.dumps({
+            "task": "connectivity_test",
+            "schema": {"ok": True, "message": "short Chinese status"},
+        }, ensure_ascii=False)},
+    ]
+    result = run_llm_json(config, messages, timeout=20)
+    if not result:
+        raise UserFacingError("LLM API 没有返回 JSON")
+    host = urllib.parse.urlparse(base_url).netloc or base_url
+    message = compact_text(str(result.get("message") or "连接正常"))
+    return f"LLM 连接正常：{model} @ {host}；{message}"
+
+
 def translate_sentence_llm(config, sentence):
     messages = [
         {"role": "system", "content": "Translate English to concise, natural Chinese. Return JSON only."},
@@ -980,6 +1001,21 @@ def command_add(argv, should_notify=False):
     print(message)
 
 
+def command_test(should_notify=False):
+    config = load_config()
+    try:
+        message = test_llm_connection(config)
+        log_event("llm_test_success", model=llm_settings(config)[1], base_url=llm_settings(config)[2])
+    except UserFacingError:
+        raise
+    except Exception as exc:
+        log_event("llm_test_failed", error=str(exc))
+        raise UserFacingError(f"LLM 连接失败：{truncate_text(str(exc), 220)}") from exc
+    if should_notify:
+        notify("English Sentence Mining", message)
+    print(message)
+
+
 def command_prefetch_sentence(argv):
     if not argv:
         return
@@ -1031,6 +1067,10 @@ def main():
             message = flush_pending(config)
             notify("English Sentence Mining", message)
             print(message)
+        elif command == "test":
+            command_test(should_notify=False)
+        elif command == "test-notify":
+            command_test(should_notify=True)
         elif command == "prefetch-sentence":
             command_prefetch_sentence(argv)
         elif command == "prefetch-target":
