@@ -1,17 +1,12 @@
 {
   "deck_name": "English::Sentence Mining",
   "model_name": "English Sentence Mining",
-  "codex_enabled": true,
-  "codex_path": "codex",
-  "codex_home": "~/.codex-ew",
-  "codex_model": "gpt-5.3-codex-spark",
-  "codex_service_tier": "",
-  "codex_reasoning_effort": "low",
-  "codex_timeout_seconds": 30,
+  "llm_api_key": "",
+  "llm_base_url": "https://api.groq.com/openai/v1",
+  "llm_model": "qwen/qwen3-32b",
+  "llm_timeout_seconds": 25,
   "preview_translation": true,
   "preview_target_lookup": true,
-  "openai_base_url": "https://api.openai.com/v1",
-  "openai_model": "",
   "public_fallback": true,
   "open_browser_after_add": true
 }

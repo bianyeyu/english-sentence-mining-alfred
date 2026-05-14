@@ -47,19 +47,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>9F5A2D4A-6D54-4C2E-8A60-1B757AF4C5A1</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>B1D87F09-AB6E-4B83-8EB2-780D12B29A6D</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>BC877D37-BB4D-4921-AB8E-6A5361BD7A89</key>
 		<array>
 			<dict>
@@ -271,76 +258,21 @@
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>ewsetup</string>
-				<key>subtext</key>
-				<string>Login or verify the isolated Codex ChatGPT session for ew</string>
-				<key>text</key>
-				<string>Setup English Sentence Mining Codex login</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>9F5A2D4A-6D54-4C2E-8A60-1B757AF4C5A1</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>./setup.sh</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>11</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>B1D87F09-AB6E-4B83-8EB2-780D12B29A6D</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
 	</array>
 	<key>readme</key>
 	<string># English Sentence Mining
 
 ## First-time setup
 
-1. Install OpenAI Codex CLI if it is not installed.
-2. Run `ewsetup` in Alfred.
-3. A Terminal window opens the Codex ChatGPT login flow.
-4. Run `ewsetup` again. Success looks like: `Codex 已登录：/Users/you/.codex-ew`.
+1. Install the workflow in Alfred.
+2. Open Configure Workflow.
+3. Paste your Groq API key into `LLM API Key`.
+4. Keep the default model `qwen/qwen3-32b`, or replace it with another model supported by your OpenAI-compatible provider.
 
-The workflow uses an isolated Codex home by default:
+Default API settings:
 
-`~/.codex-ew`
-
-This keeps the `ew` login/cache separate from your main Codex setup. To reuse your normal Codex login, change `codex_home` to:
-
-`~/.codex`
-
-## Default Codex lookup
-
-- Model: `gpt-5.3-codex-spark`
-- Service tier: default
-- Reasoning effort: `low`
-
-These values are editable in this Configure Workflow panel. For `gpt-5.5`, you may set Service Tier to `fast` and Reasoning Effort to `none`.
+- Base URL: `https://api.groq.com/openai/v1`
+- Model: `qwen/qwen3-32b`
 
 ## Daily use
 
@@ -348,9 +280,13 @@ Select an English sentence, run Universal Actions, choose `ew`, then pick the un
 
 `ew` shows sentence translation at the top of Alfred results. Exact word queries and `/phrase` queries warm target meaning previews in the background.
 
+## Provider switching
+
+This workflow uses the OpenAI-compatible `/chat/completions` API shape. To use another provider, change `LLM Base URL` and `LLM Model` in Configure Workflow.
+
 ## Sharing safety
 
-Do not export or publish `~/.codex/auth.json`, `~/.codex-ew/auth.json`, `config.json` with API keys, or any exported credential variables. Other users should run `ewsetup` and sign in with their own ChatGPT account.</string>
+Do not export or publish `config.json` with API keys, or any exported credential variables. Other users should enter their own API key in Configure Workflow.</string>
 	<key>uidata</key>
 	<dict>
 		<key>0C9B26E0-DAC0-43D7-8F01-58CC0C5A0F0D</key>
@@ -397,20 +333,6 @@ Do not export or publish `~/.codex/auth.json`, `~/.codex-ew/auth.json`, `config.
 			<key>ypos</key>
 			<integer>90</integer>
 		</dict>
-		<key>9F5A2D4A-6D54-4C2E-8A60-1B757AF4C5A1</key>
-		<dict>
-			<key>xpos</key>
-			<integer>40</integer>
-			<key>ypos</key>
-			<integer>620</integer>
-		</dict>
-		<key>B1D87F09-AB6E-4B83-8EB2-780D12B29A6D</key>
-		<dict>
-			<key>xpos</key>
-			<integer>300</integer>
-			<key>ypos</key>
-			<integer>620</integer>
-		</dict>
 		<key>BC877D37-BB4D-4921-AB8E-6A5361BD7A89</key>
 		<dict>
 			<key>xpos</key>
@@ -422,179 +344,74 @@ Do not export or publish `~/.codex/auth.json`, `~/.codex-ew/auth.json`, `config.
 	<key>userconfigurationconfig</key>
 	<array>
 		<dict>
+			<key>variable</key>
+			<string>llm_api_key</string>
+			<key>label</key>
+			<string>LLM API Key</string>
+			<key>description</key>
+			<string>Groq API key or another OpenAI-compatible provider key. Not exported with the workflow.</string>
+			<key>type</key>
+			<string>textfield</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
 				<string></string>
 				<key>placeholder</key>
-				<string>Optional; free fallback works without it</string>
+				<string>gsk_...</string>
 				<key>required</key>
 				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
-			<key>description</key>
-			<string>Optional OpenAI-compatible key for better contextual meanings.</string>
-			<key>label</key>
-			<string>OpenAI API Key</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>openai_api_key</string>
 		</dict>
 		<dict>
+			<key>variable</key>
+			<string>llm_model</string>
+			<key>label</key>
+			<string>LLM Model</string>
+			<key>description</key>
+			<string>Model used for translations and contextual meanings.</string>
+			<key>type</key>
+			<string>textfield</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string></string>
+				<string>qwen/qwen3-32b</string>
 				<key>placeholder</key>
-				<string>Your preferred small model</string>
+				<string>qwen/qwen3-32b</string>
 				<key>required</key>
 				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
-			<key>description</key>
-			<string>Leave empty to use public fallback only.</string>
-			<key>label</key>
-			<string>OpenAI Model</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>openai_model</string>
 		</dict>
 		<dict>
+			<key>variable</key>
+			<string>llm_base_url</string>
+			<key>label</key>
+			<string>LLM Base URL</string>
+			<key>description</key>
+			<string>OpenAI-compatible API base URL. Default is Groq.</string>
+			<key>type</key>
+			<string>textfield</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string>https://api.openai.com/v1</string>
+				<string>https://api.groq.com/openai/v1</string>
 				<key>placeholder</key>
-				<string>https://api.openai.com/v1</string>
+				<string>https://api.groq.com/openai/v1</string>
 				<key>required</key>
 				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
-			<key>description</key>
-			<string>OpenAI-compatible base URL.</string>
-			<key>label</key>
-			<string>OpenAI Base URL</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>openai_base_url</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string>~/.codex-ew</string>
-				<key>placeholder</key>
-				<string>~/.codex-ew</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string>Isolated Codex login/cache directory used by ewsetup and ew.</string>
-			<key>label</key>
-			<string>Codex Home</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>codex_home</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string>codex</string>
-				<key>placeholder</key>
-				<string>codex or /path/to/codex</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string>Codex CLI executable. Leave as codex unless Alfred cannot find it.</string>
-			<key>label</key>
-			<string>Codex CLI Path</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>codex_path</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string>gpt-5.3-codex-spark</string>
-				<key>placeholder</key>
-				<string>gpt-5.3-codex-spark</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string>Codex model for ChatGPT-subscription lookups.</string>
-			<key>label</key>
-			<string>Codex Model</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>codex_model</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string></string>
-				<key>placeholder</key>
-				<string>leave empty for default tier; use fast for gpt-5.5</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string>Service tier override. Leave empty for Spark; use fast for GPT-5.5.</string>
-			<key>label</key>
-			<string>Codex Service Tier</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>codex_service_tier</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string>low</string>
-				<key>placeholder</key>
-				<string>low</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string>Reasoning effort for lookup. Spark supports low/medium/high/xhigh; GPT-5.5 can use none.</string>
-			<key>label</key>
-			<string>Codex Reasoning Effort</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>codex_reasoning_effort</string>
 		</dict>
 	</array>
 	<key>variablesdontexport</key>
 	<array>
-		<string>openai_api_key</string>
+		<string>llm_api_key</string>
 	</array>
 	<key>version</key>
-	<string>0.1.2</string>
+	<string>0.2.0</string>
 </dict>
 </plist>

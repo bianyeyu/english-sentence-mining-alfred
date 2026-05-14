@@ -7,8 +7,6 @@ import html
 import json
 import os
 import re
-import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -33,17 +31,12 @@ ANKI_URL = "http://127.0.0.1:8765"
 DEFAULT_CONFIG = {
     "deck_name": "English::Sentence Mining",
     "model_name": "English Sentence Mining",
-    "codex_enabled": True,
-    "codex_path": "codex",
-    "codex_home": "~/.codex-ew",
-    "codex_model": "gpt-5.3-codex-spark",
-    "codex_service_tier": "",
-    "codex_reasoning_effort": "low",
-    "codex_timeout_seconds": 30,
+    "llm_api_key": "",
+    "llm_base_url": "https://api.groq.com/openai/v1",
+    "llm_model": "qwen/qwen3-32b",
+    "llm_timeout_seconds": 25,
     "preview_translation": True,
     "preview_target_lookup": True,
-    "openai_base_url": "https://api.openai.com/v1",
-    "openai_model": "",
     "public_fallback": True,
     "open_browser_after_add": True,
 }
@@ -87,8 +80,18 @@ def load_config():
             config[key] = coerce_config_value(key, os.environ[env_key], DEFAULT_CONFIG[key])
         if os.environ.get(key):
             config[key] = coerce_config_value(key, os.environ[key], DEFAULT_CONFIG[key])
-    if os.environ.get("openai_api_key"):
-        config["openai_api_key"] = os.environ["openai_api_key"]
+    if os.environ.get("GROQ_API_KEY"):
+        config["llm_api_key"] = os.environ["GROQ_API_KEY"]
+    if os.environ.get("GROQ_MODEL"):
+        config["llm_model"] = os.environ["GROQ_MODEL"]
+    if os.environ.get("GROQ_BASE_URL"):
+        config["llm_base_url"] = os.environ["GROQ_BASE_URL"]
+    if not config.get("llm_api_key") and os.environ.get("OPENAI_API_KEY"):
+        config["llm_api_key"] = os.environ["OPENAI_API_KEY"]
+    if not config.get("llm_model") and os.environ.get("OPENAI_MODEL"):
+        config["llm_model"] = os.environ["OPENAI_MODEL"]
+    if os.environ.get("OPENAI_BASE_URL"):
+        config["llm_base_url"] = os.environ["OPENAI_BASE_URL"]
     return config
 
 
@@ -157,78 +160,6 @@ def open_alfred(query):
 def applescript_string(text):
     escaped = str(text).replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
-
-
-def expand_user_path(raw_path):
-    return os.path.expandvars(os.path.expanduser(str(raw_path or "")))
-
-
-def resolve_executable(config, key):
-    value = str(config.get(key) or "").strip()
-    candidates = [value] if value else []
-    if key == "codex_path":
-        candidates.extend([
-            "~/.npm-global/bin/codex",
-            "/opt/homebrew/bin/codex",
-            "/usr/local/bin/codex",
-        ])
-    for candidate in candidates:
-        expanded = expand_user_path(candidate)
-        resolved = shutil.which(expanded)
-        if resolved:
-            return resolved
-        if os.path.isfile(expanded) and os.access(expanded, os.X_OK):
-            return expanded
-    return value
-
-
-def codex_home(config):
-    return expand_user_path(config.get("codex_home") or "~/.codex-ew")
-
-
-def codex_env(config):
-    env = os.environ.copy()
-    env["CODEX_HOME"] = codex_home(config)
-    return env
-
-
-def codex_status(config):
-    codex = resolve_executable(config, "codex_path")
-    if not codex or not (shutil.which(codex) or os.path.exists(expand_user_path(codex))):
-        return "missing", "Codex CLI 未安装或未配置路径"
-    try:
-        result = subprocess.run(
-            [codex, "login", "status"],
-            text=True,
-            capture_output=True,
-            timeout=8,
-            env=codex_env(config),
-        )
-    except Exception as exc:
-        return "error", str(exc)
-    output = compact_text((result.stdout or "") + " " + (result.stderr or ""))
-    if result.returncode == 0:
-        return "logged_in", output
-    return "not_logged_in", output or "Codex 尚未登录"
-
-
-def open_codex_login_terminal(config):
-    codex = resolve_executable(config, "codex_path")
-    home = codex_home(config)
-    shell_cmd = (
-        f"mkdir -p {shlex.quote(home)}; "
-        f"CODEX_HOME={shlex.quote(home)} {shlex.quote(codex)} login; "
-        f"echo; "
-        f"CODEX_HOME={shlex.quote(home)} {shlex.quote(codex)} login status; "
-        f"echo; echo 'English Sentence Mining setup finished. You can close this window.'"
-    )
-    script = "\n".join([
-        'tell application "Terminal"',
-        "activate",
-        f"do script {applescript_string(shell_cmd)}",
-        "end tell",
-    ])
-    subprocess.run(["/usr/bin/osascript", "-e", script], check=False)
 
 
 def load_lookup_cache():
@@ -516,7 +447,7 @@ def translation_item(config, sentence, snippet):
     return {
         "uid": hashlib.sha1(("translation-empty\0" + sentence).encode("utf-8")).hexdigest(),
         "title": "整句翻译生成中...",
-        "subtitle": "后台生成中；需要登录或检查配置时输入 ewsetup",
+        "subtitle": "后台生成中；如无结果请检查 Configure Workflow 里的 LLM API 配置",
         "valid": False,
     }, True
 
@@ -673,104 +604,55 @@ def extract_json_object(text):
         raise
 
 
-def run_codex_json(config, user_payload, schema_hint, timeout=None):
-    if not config.get("codex_enabled", True):
-        return None
-    codex = resolve_executable(config, "codex_path")
-    if not codex or not (shutil.which(codex) or os.path.exists(expand_user_path(codex))):
-        raise UserFacingError("Codex CLI 未安装；请先安装 OpenAI Codex CLI")
-
-    prompt = (
-        "You are a concise English-to-Chinese sentence-mining helper. "
-        "Return valid JSON only. Do not include markdown.\n\n"
-        f"Input:\n{json.dumps(user_payload, ensure_ascii=False)}\n\n"
-        f"Required JSON schema:\n{json.dumps(schema_hint, ensure_ascii=False)}"
+def llm_settings(config):
+    api_key = (
+        os.environ.get("GROQ_API_KEY")
+        or os.environ.get("LLM_API_KEY")
+        or os.environ.get("OPENAI_API_KEY")
+        or config.get("llm_api_key", "")
     )
-    command = [
-        codex,
-        "exec",
-        "--ephemeral",
-        "--ignore-user-config",
-        "--ignore-rules",
-        "--skip-git-repo-check",
-        "--sandbox",
-        "read-only",
-        "-C",
-        "/tmp",
+    model = (
+        os.environ.get("GROQ_MODEL")
+        or os.environ.get("LLM_MODEL")
+        or os.environ.get("OPENAI_MODEL")
+        or config.get("llm_model", "")
+    )
+    base_url = (
+        os.environ.get("GROQ_BASE_URL")
+        or os.environ.get("LLM_BASE_URL")
+        or os.environ.get("OPENAI_BASE_URL")
+        or config.get("llm_base_url", "")
+    ).rstrip("/")
+    return api_key, model, base_url or "https://api.groq.com/openai/v1"
+
+
+def run_llm_json(config, messages, timeout=None):
+    api_key, model, base_url = llm_settings(config)
+    if not api_key or not model:
+        return None
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": 0.2,
+        "response_format": {"type": "json_object"},
+    }
+    headers = {"Authorization": f"Bearer {api_key}"}
+    seconds = timeout if timeout is not None else int(config.get("llm_timeout_seconds") or 25)
+    data = request_json(f"{base_url}/chat/completions", payload, headers=headers, timeout=seconds)
+    return extract_json_object(data["choices"][0]["message"]["content"])
+
+
+def translate_sentence_llm(config, sentence):
+    messages = [
+        {"role": "system", "content": "Translate English to concise, natural Chinese. Return JSON only."},
+        {"role": "user", "content": json.dumps({"sentence": sentence, "schema": {"sentence_translation_zh": "translation"}}, ensure_ascii=False)},
     ]
-    service_tier = compact_text(str(config.get("codex_service_tier") or ""))
-    reasoning = compact_text(str(config.get("codex_reasoning_effort") or ""))
-    if service_tier:
-        command.extend(["-c", f"service_tier={json.dumps(service_tier)}"])
-    if reasoning:
-        command.extend(["-c", f"model_reasoning_effort={json.dumps(reasoning)}"])
-    model = str(config.get("codex_model") or "").strip()
-    if model:
-        command.extend(["-m", model])
-    command.append(prompt)
-
-    seconds = timeout if timeout is not None else int(config.get("codex_timeout_seconds") or 30)
-    result = subprocess.run(
-        command,
-        text=True,
-        capture_output=True,
-        timeout=seconds,
-        env=codex_env(config),
-    )
-    if result.returncode != 0:
-        error = truncate_text((result.stderr or result.stdout or "").strip(), 220)
-        raise UserFacingError(f"Codex 查询失败：{error}")
-    return extract_json_object(result.stdout)
-
-
-def lookup_sentence_codex(config, sentence):
-    payload = {
-        "task": "translate_sentence",
-        "sentence": sentence,
-    }
-    schema = {
-        "sentence_translation_zh": "full Chinese translation, concise and natural",
-    }
-    result = run_codex_json(config, payload, schema)
-    translation = compact_text(result.get("sentence_translation_zh", "") if result else "")
-    if not translation:
-        raise UserFacingError("Codex 没有返回句子翻译")
-    return translation
-
-
-def lookup_codex(config, target_text, sentence, target_type="word"):
-    payload = {
-        "task": "build_anki_lookup",
-        "target_text": target_text,
-        "target_type": target_type,
-        "sentence": sentence,
-    }
-    schema = {
-        "word": "target surface form; may be a word or a phrase",
-        "lemma": "dictionary form for a word, or normalized phrase",
-        "part_of_speech": "part of speech in this sentence",
-        "word_meaning_zh": "common Chinese meaning for the target, concise",
-        "meaning_in_context_zh": "meaning in this exact sentence, concise",
-        "sentence_translation_zh": "full Chinese sentence translation",
-        "cloze_sentence": "same sentence, with the exact target wrapped in <b>...</b>",
-    }
-    result = run_codex_json(config, payload, schema)
+    result = run_llm_json(config, messages, timeout=25)
     if not result:
-        return None
-    result.setdefault("word", target_text)
-    result.setdefault("lemma", target_text.lower())
-    result.setdefault("part_of_speech", "")
-    result.setdefault("word_meaning_zh", "")
-    result.setdefault("meaning_in_context_zh", "")
-    result.setdefault("sentence_translation_zh", "")
-    result.setdefault("cloze_sentence", cloze_sentence(sentence, target_text))
-    result["lookup_note"] = (
-        "codex_chatgpt:"
-        f" {config.get('codex_model')}"
-        f" tier={config.get('codex_service_tier') or 'default'}"
-        f" reasoning={config.get('codex_reasoning_effort') or 'default'}"
-    )
-    return result
+        return ""
+    translation = compact_text(result.get("sentence_translation_zh", "") if result else "")
+    return translation
 
 
 def context_phrase(sentence, target_text):
@@ -788,16 +670,7 @@ def cloze_sentence(sentence, target_text):
     return pattern.sub(r"<b>\1</b>", html.escape(sentence), count=1)
 
 
-def lookup_openai(config, target_text, sentence, target_type="word"):
-    api_key = os.environ.get("OPENAI_API_KEY") or config.get("openai_api_key", "")
-    model = os.environ.get("OPENAI_MODEL") or config.get("openai_model", "")
-    if not api_key or not model:
-        return None
-
-    base_url = (os.environ.get("OPENAI_BASE_URL") or config.get("openai_base_url") or "").rstrip("/")
-    if not base_url:
-        base_url = "https://api.openai.com/v1"
-
+def lookup_llm(config, target_text, sentence, target_type="word"):
     system = (
         "You create concise Chinese Anki vocabulary or phrase notes from English sentence mining. "
         "Return valid JSON only."
@@ -816,50 +689,27 @@ def lookup_openai(config, target_text, sentence, target_type="word"):
             "cloze_sentence": "same sentence, with the exact target wrapped in <b>...</b>",
         },
     }
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": json.dumps(user, ensure_ascii=False)},
-        ],
-        "temperature": 0.2,
-        "response_format": {"type": "json_object"},
-    }
-    headers = {"Authorization": f"Bearer {api_key}"}
-    data = request_json(f"{base_url}/chat/completions", payload, headers=headers, timeout=35)
-    content = data["choices"][0]["message"]["content"]
-    result = json.loads(content)
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": json.dumps(user, ensure_ascii=False)},
+    ]
+    result = run_llm_json(config, messages, timeout=35)
+    if not result:
+        return None
     result.setdefault("word", target_text)
-    result["lookup_note"] = "openai"
+    result.setdefault("lemma", target_text.lower())
+    result.setdefault("part_of_speech", "")
+    result.setdefault("word_meaning_zh", "")
+    result.setdefault("meaning_in_context_zh", "")
+    result.setdefault("sentence_translation_zh", "")
+    result.setdefault("cloze_sentence", cloze_sentence(sentence, target_text))
+    result["lookup_note"] = f"llm_api: {llm_settings(config)[1]}"
     return result
-
-
-def translate_sentence_openai(config, sentence):
-    api_key = os.environ.get("OPENAI_API_KEY") or config.get("openai_api_key", "")
-    model = os.environ.get("OPENAI_MODEL") or config.get("openai_model", "")
-    if not api_key or not model:
-        return ""
-    base_url = (os.environ.get("OPENAI_BASE_URL") or config.get("openai_base_url") or "").rstrip("/")
-    if not base_url:
-        base_url = "https://api.openai.com/v1"
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": "Translate English to concise, natural Chinese. Return JSON only."},
-            {"role": "user", "content": json.dumps({"sentence": sentence, "schema": {"sentence_translation_zh": "translation"}}, ensure_ascii=False)},
-        ],
-        "temperature": 0.2,
-        "response_format": {"type": "json_object"},
-    }
-    headers = {"Authorization": f"Bearer {api_key}"}
-    data = request_json(f"{base_url}/chat/completions", payload, headers=headers, timeout=25)
-    result = json.loads(data["choices"][0]["message"]["content"])
-    return compact_text(result.get("sentence_translation_zh", ""))
 
 
 def lookup_public(config, target_text, sentence, target_type="word"):
     if not config.get("public_fallback", True):
-        raise UserFacingError("没有配置 OPENAI_API_KEY/OPENAI_MODEL，且 public_fallback=false")
+        raise UserFacingError("没有配置 LLM API key/model，且 public_fallback=false")
     is_phrase = target_type == "phrase" or infer_target_type(target_text) == "phrase"
     sentence_zh = translate_public(sentence)
 
@@ -868,7 +718,7 @@ def lookup_public(config, target_text, sentence, target_type="word"):
         meaning = target_zh or "未查到词组释义"
         context_meaning = target_zh or meaning
         pos = ""
-        lookup_note = "public_fallback_phrase: free translation only; configure OPENAI_API_KEY and OPENAI_MODEL for precise phrase meanings"
+        lookup_note = "public_fallback_phrase: free translation only; configure LLM API key and model for precise phrase meanings"
     else:
         pos, definition = dictionary_public(target_text)
         definition_zh = translate_public(definition) if definition else ""
@@ -879,7 +729,7 @@ def lookup_public(config, target_text, sentence, target_type="word"):
         if definition and definition_zh:
             meaning = f"{definition_zh}; {definition}"
         context_meaning = phrase_zh or definition_zh or target_zh or meaning
-        lookup_note = "public_fallback: configure OPENAI_API_KEY and OPENAI_MODEL for precise contextual meanings"
+        lookup_note = "public_fallback: configure LLM API key and model for precise contextual meanings"
 
     return {
         "word": target_text,
@@ -900,22 +750,14 @@ def sentence_translation(config, sentence):
     if cached:
         return cached
     errors = []
-    if config.get("codex_enabled", True):
-        try:
-            translation = lookup_sentence_codex(config, sentence)
-            set_cached_lookup("sentence_translation", sentence, translation)
-            return translation
-        except Exception as exc:
-            errors.append(str(exc))
-            log_event("codex_sentence_failed", sentence=sentence, error=str(exc))
     try:
-        translation = translate_sentence_openai(config, sentence)
+        translation = translate_sentence_llm(config, sentence)
         if translation:
             set_cached_lookup("sentence_translation", sentence, translation)
             return translation
     except Exception as exc:
         errors.append(str(exc))
-        log_event("openai_sentence_failed", sentence=sentence, error=str(exc))
+        log_event("llm_sentence_failed", sentence=sentence, error=str(exc))
     if config.get("public_fallback", True):
         translation = translate_public(sentence)
         if translation:
@@ -931,19 +773,8 @@ def lookup_word(config, target_text, sentence, target_type="word"):
     if cached:
         return cached
     errors = []
-    if config.get("codex_enabled", True):
-        try:
-            result = lookup_codex(config, target_text, sentence, target_type)
-            if result:
-                set_cached_lookup("target_lookup", sentence, result, target_text, target_type)
-                if result.get("sentence_translation_zh"):
-                    set_cached_lookup("sentence_translation", sentence, result["sentence_translation_zh"])
-                return result
-        except Exception as exc:
-            errors.append(str(exc))
-            log_event("codex_lookup_failed", target_text=target_text, target_type=target_type, sentence=sentence, error=str(exc))
     try:
-        result = lookup_openai(config, target_text, sentence, target_type)
+        result = lookup_llm(config, target_text, sentence, target_type)
         if result:
             set_cached_lookup("target_lookup", sentence, result, target_text, target_type)
             if result.get("sentence_translation_zh"):
@@ -954,7 +785,7 @@ def lookup_word(config, target_text, sentence, target_type="word"):
             reason = " | ".join(errors + [str(exc)])
             raise UserFacingError(f"查询失败：{reason}") from exc
         errors.append(str(exc))
-        log_event("openai_lookup_failed", target_text=target_text, target_type=target_type, sentence=sentence, error=str(exc))
+        log_event("llm_lookup_failed", target_text=target_text, target_type=target_type, sentence=sentence, error=str(exc))
     result = lookup_public(config, target_text, sentence, target_type)
     set_cached_lookup("target_lookup", sentence, result, target_text, target_type)
     if result.get("sentence_translation_zh"):
@@ -1149,28 +980,6 @@ def command_add(argv, should_notify=False):
     print(message)
 
 
-def command_setup(should_notify=False):
-    config = load_config()
-    codex = resolve_executable(config, "codex_path")
-    home = codex_home(config)
-    status, detail = codex_status(config)
-    if status == "missing":
-        message = "未找到 Codex CLI；请先安装 OpenAI Codex CLI，再运行 ewsetup"
-    elif status == "logged_in":
-        message = f"Codex 已登录：{home}"
-    elif status == "error":
-        message = f"Codex 状态检查失败：{detail}"
-    else:
-        ensure_data_dir()
-        Path(home).mkdir(parents=True, exist_ok=True)
-        open_codex_login_terminal(config)
-        message = f"已打开 Terminal 登录 Codex：{home}"
-    log_event("setup", codex_path=codex, codex_home=home, status=status, detail=detail)
-    if should_notify:
-        notify("English Sentence Mining", message)
-    print(message)
-
-
 def command_prefetch_sentence(argv):
     if not argv:
         return
@@ -1222,10 +1031,6 @@ def main():
             message = flush_pending(config)
             notify("English Sentence Mining", message)
             print(message)
-        elif command == "setup-notify":
-            command_setup(should_notify=True)
-        elif command == "setup":
-            command_setup(should_notify=False)
         elif command == "prefetch-sentence":
             command_prefetch_sentence(argv)
         elif command == "prefetch-target":
