@@ -37,6 +37,8 @@ DEFAULT_CONFIG = {
     "llm_timeout_seconds": 25,
     "preview_translation": True,
     "preview_target_lookup": True,
+    "target_lookup_prefix_min_chars": 2,
+    "target_lookup_prefix_max_candidates": 3,
     "public_fallback": True,
     "open_browser_after_add": True,
 }
@@ -427,6 +429,32 @@ def maybe_target_preview(config, target_text, sentence, target_type, allow_looku
     return "释义生成中...", True
 
 
+def config_int(config, key, default):
+    try:
+        return int(config.get(key, default))
+    except (TypeError, ValueError):
+        return default
+
+
+def should_allow_target_lookup(config, query, target_text, target_type):
+    query_key = compact_text(query).lower()
+    target_key = compact_text(target_text).lower()
+    if not query_key or not target_key:
+        return False
+    if target_key == query_key:
+        return True
+    if target_type != "word":
+        return False
+    min_chars = config_int(config, "target_lookup_prefix_min_chars", 2)
+    return min_chars > 0 and len(query_key) >= min_chars and target_key.startswith(query_key)
+
+
+def is_prefix_lookup(query, target_text, target_type):
+    query_key = compact_text(query).lower()
+    target_key = compact_text(target_text).lower()
+    return bool(query_key and target_type == "word" and target_key.startswith(query_key) and target_key != query_key)
+
+
 def translation_item(config, sentence, snippet):
     if not config.get("preview_translation", True):
         return {
@@ -521,10 +549,17 @@ def command_list(argv):
     log_event("list", query=query, sentence=sentence, candidates=len(targets), shown=len(filtered))
 
     items = [top_item]
+    prefix_lookup_count = 0
+    max_prefix_lookups = max(0, config_int(config, "target_lookup_prefix_max_candidates", 3))
     for target in filtered:
         target_text = target["text"]
         target_type = target["type"]
-        allow_lookup = bool(query and target_text.lower() == query.lower())
+        allow_lookup = should_allow_target_lookup(config, query, target_text, target_type)
+        if allow_lookup and is_prefix_lookup(query, target_text, target_type):
+            if prefix_lookup_count >= max_prefix_lookups:
+                allow_lookup = False
+            else:
+                prefix_lookup_count += 1
         preview, pending = maybe_target_preview(config, target_text, sentence, target_type, allow_lookup=allow_lookup)
         target_pending = target_pending or pending
         items.append({

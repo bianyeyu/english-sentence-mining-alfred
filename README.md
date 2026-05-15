@@ -66,6 +66,8 @@ The workflow icon defaults to candidate 1. The generated alternatives are kept i
 
 The list now includes both single-word candidates and short phrase chunks.
 
+Typing the first two letters of a word candidate now starts its contextual meaning preview. Phrase targets still require selecting a shown phrase or using the slash query, which keeps API calls bounded.
+
 If the exact phrase is not shown, keep the current sentence cached and type a slash query in Alfred:
 
 ```text

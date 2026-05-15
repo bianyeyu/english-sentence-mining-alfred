@@ -339,7 +339,7 @@ Default API settings:
 
 Select an English sentence, run Universal Actions, choose `ew`, then pick the unknown word or phrase. Manual fallback: type `ew &lt;sentence&gt;`.
 
-`ew` shows sentence translation at the top of Alfred results. Exact word queries and `/phrase` queries warm target meaning previews in the background. Run `ewtest` to verify the configured API connection.
+`ew` shows sentence translation at the top of Alfred results. Typing the first two letters of a word candidate warms its meaning preview; `/phrase` queries still support exact phrase targets. Run `ewtest` to verify the configured API connection.
 
 ## Provider switching
 
@@ -487,6 +487,6 @@ Do not export or publish `config.json` with API keys, or any exported credential
 		<string>llm_api_key</string>
 	</array>
 	<key>version</key>
-	<string>0.2.1</string>
+	<string>0.2.2</string>
 </dict>
 </plist>

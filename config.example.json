@@ -7,6 +7,8 @@
   "llm_timeout_seconds": 25,
   "preview_translation": true,
   "preview_target_lookup": true,
+  "target_lookup_prefix_min_chars": 2,
+  "target_lookup_prefix_max_candidates": 3,
   "public_fallback": true,
   "open_browser_after_add": true
 }
