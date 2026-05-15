@@ -92,7 +92,14 @@ class TargetExtractionTests(unittest.TestCase):
         self.assertTrue(english_anki.should_allow_target_lookup(config, "te", "test", "word"))
         self.assertFalse(english_anki.should_allow_target_lookup(config, "t", "test", "word"))
         self.assertFalse(english_anki.should_allow_target_lookup(config, "es", "test", "word"))
-        self.assertFalse(english_anki.should_allow_target_lookup(config, "te", "test case", "phrase"))
+
+    def test_two_letter_phrase_content_prefix_can_start_target_lookup(self):
+        config = dict(english_anki.DEFAULT_CONFIG)
+
+        self.assertTrue(english_anki.should_allow_target_lookup(config, "li", "in light of", "phrase"))
+        self.assertFalse(english_anki.should_allow_target_lookup(config, "l", "in light of", "phrase"))
+        self.assertFalse(english_anki.should_allow_target_lookup(config, "in", "in light of", "phrase"))
+        self.assertFalse(english_anki.should_allow_target_lookup(config, "ac", "take into account", "phrase"))
 
 
 if __name__ == "__main__":

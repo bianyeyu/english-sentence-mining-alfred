@@ -9,6 +9,8 @@
   "preview_target_lookup": true,
   "target_lookup_prefix_min_chars": 2,
   "target_lookup_prefix_max_candidates": 3,
+  "phrase_lookup_prefix_min_chars": 2,
+  "phrase_lookup_prefix_max_candidates": 2,
   "public_fallback": true,
   "open_browser_after_add": true
 }

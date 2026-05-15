@@ -39,6 +39,8 @@ DEFAULT_CONFIG = {
     "preview_target_lookup": True,
     "target_lookup_prefix_min_chars": 2,
     "target_lookup_prefix_max_candidates": 3,
+    "phrase_lookup_prefix_min_chars": 2,
+    "phrase_lookup_prefix_max_candidates": 2,
     "public_fallback": True,
     "open_browser_after_add": True,
 }
@@ -436,6 +438,14 @@ def config_int(config, key, default):
         return default
 
 
+def phrase_lookup_trigger_token(phrase):
+    for token in sentence_tokens(phrase):
+        key = token.lower()
+        if key not in STOP_WORDS:
+            return key
+    return ""
+
+
 def should_allow_target_lookup(config, query, target_text, target_type):
     query_key = compact_text(query).lower()
     target_key = compact_text(target_text).lower()
@@ -443,16 +453,27 @@ def should_allow_target_lookup(config, query, target_text, target_type):
         return False
     if target_key == query_key:
         return True
-    if target_type != "word":
-        return False
-    min_chars = config_int(config, "target_lookup_prefix_min_chars", 2)
-    return min_chars > 0 and len(query_key) >= min_chars and target_key.startswith(query_key)
+    if target_type == "word":
+        min_chars = config_int(config, "target_lookup_prefix_min_chars", 2)
+        return min_chars > 0 and len(query_key) >= min_chars and target_key.startswith(query_key)
+    if target_type == "phrase":
+        min_chars = config_int(config, "phrase_lookup_prefix_min_chars", 2)
+        trigger_key = phrase_lookup_trigger_token(target_text)
+        return min_chars > 0 and len(query_key) >= min_chars and bool(trigger_key) and trigger_key.startswith(query_key)
+    return False
 
 
 def is_prefix_lookup(query, target_text, target_type):
     query_key = compact_text(query).lower()
     target_key = compact_text(target_text).lower()
-    return bool(query_key and target_type == "word" and target_key.startswith(query_key) and target_key != query_key)
+    if not query_key or target_key == query_key:
+        return False
+    if target_type == "word":
+        return target_key.startswith(query_key)
+    if target_type == "phrase":
+        trigger_key = phrase_lookup_trigger_token(target_text)
+        return bool(trigger_key and trigger_key.startswith(query_key))
+    return False
 
 
 def translation_item(config, sentence, snippet):
@@ -549,17 +570,25 @@ def command_list(argv):
     log_event("list", query=query, sentence=sentence, candidates=len(targets), shown=len(filtered))
 
     items = [top_item]
-    prefix_lookup_count = 0
-    max_prefix_lookups = max(0, config_int(config, "target_lookup_prefix_max_candidates", 3))
+    word_prefix_lookup_count = 0
+    phrase_prefix_lookup_count = 0
+    max_word_prefix_lookups = max(0, config_int(config, "target_lookup_prefix_max_candidates", 3))
+    max_phrase_prefix_lookups = max(0, config_int(config, "phrase_lookup_prefix_max_candidates", 2))
     for target in filtered:
         target_text = target["text"]
         target_type = target["type"]
         allow_lookup = should_allow_target_lookup(config, query, target_text, target_type)
         if allow_lookup and is_prefix_lookup(query, target_text, target_type):
-            if prefix_lookup_count >= max_prefix_lookups:
-                allow_lookup = False
+            if target_type == "phrase":
+                if phrase_prefix_lookup_count >= max_phrase_prefix_lookups:
+                    allow_lookup = False
+                else:
+                    phrase_prefix_lookup_count += 1
             else:
-                prefix_lookup_count += 1
+                if word_prefix_lookup_count >= max_word_prefix_lookups:
+                    allow_lookup = False
+                else:
+                    word_prefix_lookup_count += 1
         preview, pending = maybe_target_preview(config, target_text, sentence, target_type, allow_lookup=allow_lookup)
         target_pending = target_pending or pending
         items.append({
